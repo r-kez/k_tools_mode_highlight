@@ -41,6 +41,13 @@ class HeaderColorAddonPreferences(AddonPreferences):
         description="Show the addon panel in the 3D View Sidebar (N-Panel)",
     )
 
+    affect_view3d_editor: BoolProperty( # type: ignore
+        name="Colorize 3D Viewport Header",
+        default=True,
+        description="Change the Header color of the 3D Viewport.",
+        update=lambda self, context: update_header_color()
+    )
+
     affect_properties_editor: BoolProperty( # type: ignore
         name="Colorize Properties Editor Header",
         default=True,
@@ -96,6 +103,7 @@ class HeaderColorAddonPreferences(AddonPreferences):
 
         col = box.column(align=True)
         col.prop(self, "header_color_enabled")
+        col.prop(self, "affect_view3d_editor")
         col.prop(self, "affect_properties_editor")
         col.prop(self, "affect_animation_editors")
         col.prop(self, "draw_playback_overlay")

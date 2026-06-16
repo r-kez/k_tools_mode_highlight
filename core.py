@@ -70,7 +70,11 @@ def update_header_color(is_playing=None):
             target_color = mode_map[mode]
 
         # Apply Colors
-        theme.view_3d.space.header = target_color
+        if prefs.affect_view3d_editor:
+            theme.view_3d.space.header = target_color
+        else:
+            if colors.has_backup:
+                theme.view_3d.space.header = colors.original_view3d_color
         
         if prefs.affect_properties_editor:
             theme.properties.space.header = target_color

@@ -122,6 +122,9 @@ class PREFERENCES_OT_reset_header_colors(Operator):
         colors.gpencil_draw_color = (0.58, 0.18, 0.32, 0.9)
         colors.animation_play_color = (0.08, 0.45, 0.18, 0.9)
 
+        prefs.affect_view3d_editor = True
+        prefs.affect_properties_editor = True
+        prefs.affect_animation_editors = True
         prefs.color_timeline_dopesheet = True
         prefs.color_graph_editor = True
         prefs.color_nla_editor = True
