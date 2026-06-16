@@ -57,11 +57,21 @@ def update_header_color(is_playing=None):
             'WEIGHT_PAINT': colors.weight_paint_color,
             'TEXTURE_PAINT': colors.texture_paint_color,
             'POSE': colors.pose_mode_color,
+            
+            # Legacy Grease Pencil (Blender < 4.3)
             'PAINT_GPENCIL': colors.gpencil_draw_color,
             'EDIT_GPENCIL': colors.edit_mode_color,
             'SCULPT_GPENCIL': colors.sculpt_mode_color,
             'VERTEX_GPENCIL': colors.vertex_paint_color,
             'WEIGHT_GPENCIL': colors.weight_paint_color,
+            
+            # New Grease Pencil v3 (Blender 4.3+)
+            'PAINT_GREASE_PENCIL': colors.gpencil_draw_color,
+            'SCULPT_GREASE_PENCIL': colors.sculpt_mode_color,
+            'VERTEX_GREASE_PENCIL': colors.vertex_paint_color,
+            'WEIGHT_GREASE_PENCIL': colors.weight_paint_color,
+            
+            # Others
             'SCULPT_CURVES': colors.sculpt_mode_color,
             'PARTICLE_EDIT': colors.edit_mode_color,
         }
