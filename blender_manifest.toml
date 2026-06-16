@@ -1,0 +1,21 @@
+schema_version = "1.0.0"
+
+
+id = "k_tools_mode_highlight"
+version = "1.0.9"
+name = "K-Tools: Mode Highlight"
+tagline = "Automatically change the header color based on the current mode"
+maintainer = "Robert Kezives <kezives3D@gmail.com>"
+
+type = "add-on"
+
+website = "https://kezives.gumroad.com/l/k-tools-mode-highlight"
+
+tags = ["3D View"]
+
+blender_version_min = "4.2.0"
+
+
+license = [
+  "SPDX:GPL-3.0-or-later",
+]
