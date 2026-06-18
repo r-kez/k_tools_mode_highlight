@@ -19,6 +19,8 @@ Automatically change Blender's header colors based on the current mode and activ
 - **💡 Dynamic Mode Highlighting**: Automatically changes the 3D Viewport and Properties Editor headers based on your current mode (Object, Edit, Sculpt, Pose, Vertex Paint, Weight Paint, Texture Paint, and Grease Pencil drawing).
 - **🎬 Playback Highlighting**: Colorizes designated animation editor headers (Timeline/Dope Sheet, Graph Editor, and NLA Editor) during active scene playback.
 - **⚡ Playback Viewport Overlay**: Renders a pulsing red "Record/PLAY" style dot and a real-time frame counter at the top-center of the 3D Viewport when animation is active.
+- **👁️ Adaptive Contrast**: Automatically calculates luminance to dynamically adjust header background opacity, ensuring maximum text and icon legibility.
+- **🎨 Dynamic Theme Tracking**: Automatically syncs header overlays with changes or updates to your active Blender theme.
 - **⚙️ Granular Controls**: Toggle colors for individual animation editors, enable/disable the viewport overlay, or configure settings globally.
 - **💾 Preset System**: Save, load, and restore your custom color configurations as lightweight JSON files.
 
