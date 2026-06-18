@@ -2,6 +2,8 @@
 
 Automatically change Blender's header colors based on the current mode and active animation playback state.
 
+## Get it in Official Blender Extensions -> [Go to Extensions Platform](https://extensions.blender.org/add-ons/k-tools-mode-highlight/)
+
 ---
 
 ## Overview
