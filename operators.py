@@ -122,6 +122,16 @@ class PREFERENCES_OT_reset_header_colors(Operator):
         colors.gpencil_draw_color = (0.58, 0.18, 0.32, 0.9)
         colors.animation_play_color = (0.08, 0.45, 0.18, 0.9)
 
+        colors.use_object_mode_color = True
+        colors.use_edit_mode_color = True
+        colors.use_sculpt_mode_color = True
+        colors.use_pose_mode_color = True
+        colors.use_vertex_paint_color = True
+        colors.use_weight_paint_color = True
+        colors.use_texture_paint_color = True
+        colors.use_gpencil_draw_color = True
+        colors.use_animation_play_color = True
+
         prefs.affect_view3d_editor = True
         prefs.affect_properties_editor = True
         prefs.affect_animation_editors = True
@@ -129,6 +139,7 @@ class PREFERENCES_OT_reset_header_colors(Operator):
         prefs.color_graph_editor = True
         prefs.color_nla_editor = True
         prefs.draw_playback_overlay = True
+        prefs.use_auto_contrast_text = True
 
         update_header_color()
         self.report({'INFO'}, "Header colors reset to defaults")

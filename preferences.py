@@ -34,6 +34,13 @@ class HeaderColorAddonPreferences(AddonPreferences):
         description="Enable automatic header color changes based on mode",
         update=lambda self, context: update_header_color()
     )
+
+    use_auto_contrast_text: BoolProperty( # type: ignore
+        name="Auto Contrast Legibility",
+        default=True,
+        description="Automatically adjust header background brightness to ensure text and menus remain readable",
+        update=lambda self, context: update_header_color()
+    )
     
     show_in_n_panel: BoolProperty( # type: ignore
         name="Show in N-Panel (N-Panel > View > Mode Highlight)",
@@ -51,21 +58,21 @@ class HeaderColorAddonPreferences(AddonPreferences):
     affect_properties_editor: BoolProperty( # type: ignore
         name="Colorize Properties Editor Header",
         default=True,
-        description="Also change the Navigation Bar and Header of the Properties Editor.",
+        description="Change the Header color of the Properties Editor.",
         update=lambda self, context: update_header_color()
     )
 
     affect_animation_editors: BoolProperty( # type: ignore
-        name="Colorize Animation Editors Header",
+        name="Colorize Animation Editors",
         default=True,
-        description="Also change designated animation editor headers when playing animation.",
+        description="Change the Header color of the selected Animation editors during playback.",
         update=lambda self, context: update_header_color()
     )
 
     color_timeline_dopesheet: BoolProperty( # type: ignore
-        name="Timeline / Dope Sheet",
+        name="Timeline/Dope Sheet",
         default=True,
-        description="Colorize Timeline and Dope Sheet headers during playback.",
+        description="Colorize Timeline/Dope Sheet header during playback.",
         update=lambda self, context: update_header_color()
     )
 
@@ -103,6 +110,7 @@ class HeaderColorAddonPreferences(AddonPreferences):
 
         col = box.column(align=True)
         col.prop(self, "header_color_enabled")
+        col.prop(self, "use_auto_contrast_text")
         col.prop(self, "affect_view3d_editor")
         col.prop(self, "affect_properties_editor")
         col.prop(self, "affect_animation_editors")
@@ -132,22 +140,73 @@ class HeaderColorAddonPreferences(AddonPreferences):
             split = box_colors.split(factor=0.5)
             
             col1 = split.column(align=True)
-            col1.prop(self.header_colors, "object_mode_color")
-            col1.prop(self.header_colors, "edit_mode_color")
-            col1.prop(self.header_colors, "sculpt_mode_color")
-            col1.prop(self.header_colors, "pose_mode_color")
+            # Object Mode
+            row = col1.row(align=True)
+            row.prop(self.header_colors, "use_object_mode_color", text="")
+            sub = row.row(align=True)
+            sub.active = self.header_colors.use_object_mode_color
+            sub.prop(self.header_colors, "object_mode_color")
+            
+            # Edit Mode
+            row = col1.row(align=True)
+            row.prop(self.header_colors, "use_edit_mode_color", text="")
+            sub = row.row(align=True)
+            sub.active = self.header_colors.use_edit_mode_color
+            sub.prop(self.header_colors, "edit_mode_color")
+            
+            # Sculpt Mode
+            row = col1.row(align=True)
+            row.prop(self.header_colors, "use_sculpt_mode_color", text="")
+            sub = row.row(align=True)
+            sub.active = self.header_colors.use_sculpt_mode_color
+            sub.prop(self.header_colors, "sculpt_mode_color")
+            
+            # Pose Mode
+            row = col1.row(align=True)
+            row.prop(self.header_colors, "use_pose_mode_color", text="")
+            sub = row.row(align=True)
+            sub.active = self.header_colors.use_pose_mode_color
+            sub.prop(self.header_colors, "pose_mode_color")
             
             col2 = split.column(align=True)
-            col2.prop(self.header_colors, "vertex_paint_color")
-            col2.prop(self.header_colors, "weight_paint_color")
-            col2.prop(self.header_colors, "texture_paint_color")
-            col2.prop(self.header_colors, "gpencil_draw_color")
+            # Vertex Paint
+            row = col2.row(align=True)
+            row.prop(self.header_colors, "use_vertex_paint_color", text="")
+            sub = row.row(align=True)
+            sub.active = self.header_colors.use_vertex_paint_color
+            sub.prop(self.header_colors, "vertex_paint_color")
+            
+            # Weight Paint
+            row = col2.row(align=True)
+            row.prop(self.header_colors, "use_weight_paint_color", text="")
+            sub = row.row(align=True)
+            sub.active = self.header_colors.use_weight_paint_color
+            sub.prop(self.header_colors, "weight_paint_color")
+            
+            # Texture Paint
+            row = col2.row(align=True)
+            row.prop(self.header_colors, "use_texture_paint_color", text="")
+            sub = row.row(align=True)
+            sub.active = self.header_colors.use_texture_paint_color
+            sub.prop(self.header_colors, "texture_paint_color")
+            
+            # Grease Pencil
+            row = col2.row(align=True)
+            row.prop(self.header_colors, "use_gpencil_draw_color", text="")
+            sub = row.row(align=True)
+            sub.active = self.header_colors.use_gpencil_draw_color
+            sub.prop(self.header_colors, "gpencil_draw_color")
             
             # 2. Animation Playback (Sibling Box)
             if self.affect_animation_editors:
                 box_anim = layout.box()
                 box_anim.label(text="Animation Playback:", icon="PLAY")
-                box_anim.prop(self.header_colors, "animation_play_color")
+                
+                row = box_anim.row(align=True)
+                row.prop(self.header_colors, "use_animation_play_color", text="")
+                sub = row.row(align=True)
+                sub.active = self.header_colors.use_animation_play_color
+                sub.prop(self.header_colors, "animation_play_color")
                 
                 col_sub = box_anim.column(align=True)
                 col_sub.label(text="Target Editors:")

@@ -1,6 +1,6 @@
 import bpy
 from bpy.types import PropertyGroup
-from bpy.props import FloatVectorProperty, BoolProperty
+from bpy.props import FloatVectorProperty, BoolProperty, StringProperty
 
 def _trigger_update(self, context):
     from .core import update_header_color
@@ -57,6 +57,35 @@ class HeaderColorProperties(PropertyGroup):
         update=_trigger_update
     )
 
+    # --- Mode Enable Toggles ---
+    use_object_mode_color: BoolProperty( # type: ignore
+        name="Use Object Mode Color", default=True, update=_trigger_update
+    )
+    use_edit_mode_color: BoolProperty( # type: ignore
+        name="Use Edit Mode Color", default=True, update=_trigger_update
+    )
+    use_sculpt_mode_color: BoolProperty( # type: ignore
+        name="Use Sculpt Mode Color", default=True, update=_trigger_update
+    )
+    use_pose_mode_color: BoolProperty( # type: ignore
+        name="Use Pose Mode Color", default=True, update=_trigger_update
+    )
+    use_vertex_paint_color: BoolProperty( # type: ignore
+        name="Use Vertex Paint Color", default=True, update=_trigger_update
+    )
+    use_weight_paint_color: BoolProperty( # type: ignore
+        name="Use Weight Paint Color", default=True, update=_trigger_update
+    )
+    use_texture_paint_color: BoolProperty( # type: ignore
+        name="Use Texture Paint Color", default=True, update=_trigger_update
+    )
+    use_gpencil_draw_color: BoolProperty( # type: ignore
+        name="Use Grease Pencil Color", default=True, update=_trigger_update
+    )
+    use_animation_play_color: BoolProperty( # type: ignore
+        name="Use Animation Play Color", default=True, update=_trigger_update
+    )
+
     # --- Backup Properties (Hidden) ---
     original_view3d_color: FloatVectorProperty( # type: ignore
         name="Original View3D", size=4, subtype='COLOR_GAMMA',
@@ -82,8 +111,59 @@ class HeaderColorProperties(PropertyGroup):
         name="Original NLA Editor", size=4, subtype='COLOR_GAMMA',
         default=(0.0, 0.0, 0.0, 0.0), options={'HIDDEN'}
     )
+
+    # --- Backup Text Colors (Hidden) ---
+    original_view3d_text: FloatVectorProperty( # type: ignore
+        name="Original View3D Text", size=3, subtype='COLOR_GAMMA',
+        default=(0.0, 0.0, 0.0), options={'HIDDEN'}
+    )
+    original_view3d_text_hi: FloatVectorProperty( # type: ignore
+        name="Original View3D Text Highlight", size=3, subtype='COLOR_GAMMA',
+        default=(0.0, 0.0, 0.0), options={'HIDDEN'}
+    )
+
+    original_props_text: FloatVectorProperty( # type: ignore
+        name="Original Properties Text", size=3, subtype='COLOR_GAMMA',
+        default=(0.0, 0.0, 0.0), options={'HIDDEN'}
+    )
+    original_props_text_hi: FloatVectorProperty( # type: ignore
+        name="Original Properties Text Highlight", size=3, subtype='COLOR_GAMMA',
+        default=(0.0, 0.0, 0.0), options={'HIDDEN'}
+    )
+
+    original_dopesheet_text: FloatVectorProperty( # type: ignore
+        name="Original Dopesheet Text", size=3, subtype='COLOR_GAMMA',
+        default=(0.0, 0.0, 0.0), options={'HIDDEN'}
+    )
+    original_dopesheet_text_hi: FloatVectorProperty( # type: ignore
+        name="Original Dopesheet Text Highlight", size=3, subtype='COLOR_GAMMA',
+        default=(0.0, 0.0, 0.0), options={'HIDDEN'}
+    )
+
+    original_graph_text: FloatVectorProperty( # type: ignore
+        name="Original Graph Text", size=3, subtype='COLOR_GAMMA',
+        default=(0.0, 0.0, 0.0), options={'HIDDEN'}
+    )
+    original_graph_text_hi: FloatVectorProperty( # type: ignore
+        name="Original Graph Text Highlight", size=3, subtype='COLOR_GAMMA',
+        default=(0.0, 0.0, 0.0), options={'HIDDEN'}
+    )
+
+    original_nla_text: FloatVectorProperty( # type: ignore
+        name="Original NLA Text", size=3, subtype='COLOR_GAMMA',
+        default=(0.0, 0.0, 0.0), options={'HIDDEN'}
+    )
+    original_nla_text_hi: FloatVectorProperty( # type: ignore
+        name="Original NLA Text Highlight", size=3, subtype='COLOR_GAMMA',
+        default=(0.0, 0.0, 0.0), options={'HIDDEN'}
+    )
     
     has_backup: BoolProperty( # type: ignore
         default=False, 
         options={'HIDDEN'}
         )
+    
+    theme_filepath: StringProperty( # type: ignore
+        default="",
+        options={'HIDDEN'}
+    )
