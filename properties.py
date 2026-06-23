@@ -2,7 +2,11 @@ import bpy
 from bpy.types import PropertyGroup
 from bpy.props import FloatVectorProperty, BoolProperty, StringProperty
 
+_block_updates = False
+
 def _trigger_update(self, context):
+    if _block_updates:
+        return
     from .core import update_header_color
     update_header_color()
 

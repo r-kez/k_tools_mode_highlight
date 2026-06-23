@@ -8,12 +8,29 @@ class HeaderColorAddonPreferences(AddonPreferences):
     bl_idname = __package__
     
     def _update_palette_preset(self, context):
-        from .palettes import PALETTES
-        if self.active_palette_preset in PALETTES:
-            palette = PALETTES[self.active_palette_preset]
-            for prop_name, color_val in palette['colors'].items():
-                setattr(self.header_colors, prop_name, color_val)
-            update_header_color()
+        def deferred_update():
+            try:
+                from .palettes import PALETTES
+                if not hasattr(bpy.context.preferences, 'addons') or __package__ not in bpy.context.preferences.addons:
+                    return None
+                prefs = bpy.context.preferences.addons[__package__].preferences
+                preset_key = prefs.active_palette_preset
+                if preset_key in PALETTES:
+                    palette = PALETTES[preset_key]
+                    from . import properties
+                    properties._block_updates = True
+                    try:
+                        for prop_name, color_val in palette['colors'].items():
+                            setattr(prefs.header_colors, prop_name, color_val)
+                    finally:
+                        properties._block_updates = False
+                    from .core import update_header_color
+                    update_header_color()
+            except Exception as e:
+                print(f"[Mode Highlight] Error updating preset: {e}")
+            return None
+
+        bpy.app.timers.register(deferred_update)
 
     active_palette_preset: EnumProperty( # type: ignore
         name="Theme Preset",
@@ -23,6 +40,7 @@ class HeaderColorAddonPreferences(AddonPreferences):
             ('SUBTLE', "Classic Subtle", "The classic desaturated mode colors"),
             ('CYBERPUNK', "Neon Cyberpunk", "High-contrast glowing neon colors"),
             ('PASTEL', "Pastel Dream", "Soft, calming pastel tones"),
+            ('SOFTIMAGE', "Softimage XSI", "A classic palette styled after Softimage XSI"),
         ],
         default='SUBTLE',
         update=_update_palette_preset
