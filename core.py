@@ -1,5 +1,42 @@
 import bpy
 
+_TEXT_FALLBACK = (0.92, 0.92, 0.92)
+
+class _SpaceCompat:
+    """Wraps a theme space. Blender 5.3 removed header_text / header_text_hi;
+    when missing, reads return a neutral fallback and writes are ignored."""
+    _OPTIONAL = {"header_text", "header_text_hi"}
+
+    def __init__(self, space):
+        object.__setattr__(self, "_space", space)
+
+    def __getattr__(self, name):
+        space = object.__getattribute__(self, "_space")
+        if name in self._OPTIONAL and not hasattr(space, name):
+            return _TEXT_FALLBACK
+        return getattr(space, name)
+
+    def __setattr__(self, name, value):
+        space = object.__getattribute__(self, "_space")
+        if name in self._OPTIONAL and not hasattr(space, name):
+            return
+        setattr(space, name, value)
+
+class _EditorCompat:
+    def __init__(self, editor):
+        self._editor = editor
+        self.space = _SpaceCompat(editor.space)
+
+class _ThemeCompat:
+    def __init__(self, theme):
+        self._theme = theme
+        for n in ("view_3d", "properties", "dopesheet_editor", "graph_editor", "nla_editor"):
+            setattr(self, n, _EditorCompat(getattr(theme, n)))
+
+    def __getattr__(self, name):
+        return getattr(self._theme, name)
+
+
 def get_contrast_text_color(bg_color):
     """Calculates appropriate text and highlight text colors based on background color luminance."""
     r, g, b = bg_color[0], bg_color[1], bg_color[2]
@@ -39,6 +76,7 @@ def adjust_bg_for_contrast(bg_color, text_color):
 
 def restore_theme(prefs, theme):
     """Restores the original theme colors if a backup exists."""
+    theme = theme if isinstance(theme, _ThemeCompat) else _ThemeCompat(theme)
     if prefs.header_colors.has_backup:
         colors = prefs.header_colors
         theme.view_3d.space.header = colors.original_view3d_color
@@ -63,13 +101,55 @@ def restore_theme(prefs, theme):
         theme.nla_editor.space.header_text = colors.original_nla_text
         theme.nla_editor.space.header_text_hi = colors.original_nla_text_hi
 
+def get_mode_config(colors, mode):
+    """Returns (color, enabled) for an object mode string."""
+    mode_configs = {
+        'OBJECT': (colors.object_mode_color, colors.use_object_mode_color),
+        'EDIT': (colors.edit_mode_color, colors.use_edit_mode_color),
+        'SCULPT': (colors.sculpt_mode_color, colors.use_sculpt_mode_color),
+        'VERTEX_PAINT': (colors.vertex_paint_color, colors.use_vertex_paint_color),
+        'WEIGHT_PAINT': (colors.weight_paint_color, colors.use_weight_paint_color),
+        'TEXTURE_PAINT': (colors.texture_paint_color, colors.use_texture_paint_color),
+        'POSE': (colors.pose_mode_color, colors.use_pose_mode_color),
+        
+        # Legacy Grease Pencil (Blender < 4.3)
+        'PAINT_GPENCIL': (colors.gpencil_draw_color, colors.use_gpencil_draw_color),
+        'EDIT_GPENCIL': (colors.edit_mode_color, colors.use_edit_mode_color),
+        'SCULPT_GPENCIL': (colors.sculpt_mode_color, colors.use_sculpt_mode_color),
+        'VERTEX_GPENCIL': (colors.vertex_paint_color, colors.use_vertex_paint_color),
+        'WEIGHT_GPENCIL': (colors.weight_paint_color, colors.use_weight_paint_color),
+        
+        # New Grease Pencil v3 (Blender 4.3+)
+        'PAINT_GREASE_PENCIL': (colors.gpencil_draw_color, colors.use_gpencil_draw_color),
+        'SCULPT_GREASE_PENCIL': (colors.sculpt_mode_color, colors.use_sculpt_mode_color),
+        'VERTEX_GREASE_PENCIL': (colors.vertex_paint_color, colors.use_vertex_paint_color),
+        'WEIGHT_GREASE_PENCIL': (colors.weight_paint_color, colors.use_weight_paint_color),
+        
+        # Others
+        'SCULPT_CURVES': (colors.sculpt_mode_color, colors.use_sculpt_mode_color),
+        'PARTICLE_EDIT': (colors.edit_mode_color, colors.use_edit_mode_color),
+    }
+    return mode_configs.get(mode, (colors.object_mode_color, colors.use_object_mode_color))
+
+MODE_LABELS = {
+    'OBJECT': "OBJECT MODE", 'EDIT': "EDIT MODE", 'SCULPT': "SCULPT MODE",
+    'VERTEX_PAINT': "VERTEX PAINT", 'WEIGHT_PAINT': "WEIGHT PAINT",
+    'TEXTURE_PAINT': "TEXTURE PAINT", 'POSE': "POSE MODE",
+    'PAINT_GPENCIL': "DRAW MODE", 'EDIT_GPENCIL': "EDIT MODE",
+    'SCULPT_GPENCIL': "SCULPT MODE", 'VERTEX_GPENCIL': "VERTEX PAINT",
+    'WEIGHT_GPENCIL': "WEIGHT PAINT", 'PAINT_GREASE_PENCIL': "DRAW MODE",
+    'SCULPT_GREASE_PENCIL': "SCULPT MODE", 'VERTEX_GREASE_PENCIL': "VERTEX PAINT",
+    'WEIGHT_GREASE_PENCIL': "WEIGHT PAINT", 'SCULPT_CURVES': "SCULPT MODE",
+    'PARTICLE_EDIT': "PARTICLE EDIT",
+}
+
 def update_header_color(is_playing=None):
     try:
         if not hasattr(bpy.context.preferences, 'addons') or __package__ not in bpy.context.preferences.addons:
             return
         
         prefs = bpy.context.preferences.addons[__package__].preferences
-        theme = bpy.context.preferences.themes[0]
+        theme = _ThemeCompat(bpy.context.preferences.themes[0])
         colors = prefs.header_colors
 
         # Detect theme changes
@@ -131,36 +211,7 @@ def update_header_color(is_playing=None):
         obj = bpy.context.active_object
         mode = obj.mode if obj else 'OBJECT'
         
-        mode_configs = {
-            'OBJECT': (colors.object_mode_color, colors.use_object_mode_color),
-            'EDIT': (colors.edit_mode_color, colors.use_edit_mode_color),
-            'SCULPT': (colors.sculpt_mode_color, colors.use_sculpt_mode_color),
-            'VERTEX_PAINT': (colors.vertex_paint_color, colors.use_vertex_paint_color),
-            'WEIGHT_PAINT': (colors.weight_paint_color, colors.use_weight_paint_color),
-            'TEXTURE_PAINT': (colors.texture_paint_color, colors.use_texture_paint_color),
-            'POSE': (colors.pose_mode_color, colors.use_pose_mode_color),
-            
-            # Legacy Grease Pencil (Blender < 4.3)
-            'PAINT_GPENCIL': (colors.gpencil_draw_color, colors.use_gpencil_draw_color),
-            'EDIT_GPENCIL': (colors.edit_mode_color, colors.use_edit_mode_color),
-            'SCULPT_GPENCIL': (colors.sculpt_mode_color, colors.use_sculpt_mode_color),
-            'VERTEX_GPENCIL': (colors.vertex_paint_color, colors.use_vertex_paint_color),
-            'WEIGHT_GPENCIL': (colors.weight_paint_color, colors.use_weight_paint_color),
-            
-            # New Grease Pencil v3 (Blender 4.3+)
-            'PAINT_GREASE_PENCIL': (colors.gpencil_draw_color, colors.use_gpencil_draw_color),
-            'SCULPT_GREASE_PENCIL': (colors.sculpt_mode_color, colors.use_sculpt_mode_color),
-            'VERTEX_GREASE_PENCIL': (colors.vertex_paint_color, colors.use_vertex_paint_color),
-            'WEIGHT_GREASE_PENCIL': (colors.weight_paint_color, colors.use_weight_paint_color),
-            
-            # Others
-            'SCULPT_CURVES': (colors.sculpt_mode_color, colors.use_sculpt_mode_color),
-            'PARTICLE_EDIT': (colors.edit_mode_color, colors.use_edit_mode_color),
-        }
-        
-        target_color, is_mode_enabled = mode_configs.get(
-            mode, (colors.object_mode_color, colors.use_object_mode_color)
-        )
+        target_color, is_mode_enabled = get_mode_config(colors, mode)
 
         # Apply Colors
         if prefs.affect_view3d_editor and is_mode_enabled:
@@ -206,7 +257,7 @@ def update_header_color(is_playing=None):
         # 4. Handle Animation Playback Highlight
         if is_playing is None:
             screen = bpy.context.screen
-            is_playing = screen.is_animation_playing if (screen and hasattr(screen, "is_animation_playing")) else False
+            is_playing = (screen.is_animation_playing and not getattr(screen, "is_scrubbing", False)) if (screen and hasattr(screen, "is_animation_playing")) else False
         
         use_anim_color = colors.use_animation_play_color
         

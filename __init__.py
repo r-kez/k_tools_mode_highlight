@@ -42,6 +42,12 @@ def register():
     if handlers.playback_stopped_handler not in bpy.app.handlers.animation_playback_post:
         bpy.app.handlers.animation_playback_post.append(handlers.playback_stopped_handler)
         
+    # Register mode outline / name handler
+    if drawing.mode_handler is None:
+        drawing.mode_handler = bpy.types.SpaceView3D.draw_handler_add(
+            drawing.draw_mode_overlay_px, (None, None), 'WINDOW', 'POST_PIXEL'
+        )
+
     # Register GPU overlay handler
     if drawing.draw_handler is None:
         drawing.draw_handler = bpy.types.SpaceView3D.draw_handler_add(
@@ -49,6 +55,7 @@ def register():
         )
         
     bpy.app.timers.register(lambda: (core.update_header_color(), None)[1], first_interval=0.1)
+    bpy.app.timers.register(lambda: (preferences.reset_previews(), None)[1], first_interval=0.2)
     bpy.app.handlers.load_post.append(handlers.load_post_handler)
 
 def unregister():
@@ -59,6 +66,10 @@ def unregister():
         bpy.app.handlers.animation_playback_pre.remove(handlers.playback_started_handler)
     if handlers.playback_stopped_handler in bpy.app.handlers.animation_playback_post:
         bpy.app.handlers.animation_playback_post.remove(handlers.playback_stopped_handler)
+
+    if drawing.mode_handler is not None:
+        bpy.types.SpaceView3D.draw_handler_remove(drawing.mode_handler, 'WINDOW')
+        drawing.mode_handler = None
 
     # Unregister GPU overlay handler
     if drawing.draw_handler is not None:

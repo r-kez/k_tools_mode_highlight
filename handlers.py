@@ -30,6 +30,8 @@ def unsubscribe_from_mode_changes():
 
 @persistent
 def load_post_handler(dummy):
+    from . import preferences
+    preferences.reset_previews()
     subscribe_to_mode_changes()
     update_header_color()
 

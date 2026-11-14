@@ -47,6 +47,15 @@ class PREFERENCES_OT_save_preset(Operator, ExportHelper):
             "color_graph_editor": prefs.color_graph_editor,
             "color_nla_editor": prefs.color_nla_editor,
             "draw_playback_overlay": prefs.draw_playback_overlay,
+            "draw_local_view_overlay": prefs.draw_local_view_overlay,
+            "local_view_overlay_pos_mode": prefs.local_view_overlay_pos_mode,
+            "local_view_overlay_percent_x": prefs.local_view_overlay_percent_x,
+            "local_view_overlay_percent_y": prefs.local_view_overlay_percent_y,
+            "local_view_overlay_font_size": prefs.local_view_overlay_font_size,
+            "local_view_overlay_use_custom_accent": prefs.local_view_overlay_use_custom_accent,
+            "local_view_overlay_accent_color": list(prefs.local_view_overlay_accent_color),
+            "local_view_overlay_bg_color": list(prefs.local_view_overlay_bg_color),
+            "local_view_overlay_bg_alpha": prefs.local_view_overlay_bg_alpha,
         }
         
         try:
@@ -92,6 +101,15 @@ class PREFERENCES_OT_load_preset(Operator, ImportHelper):
             if "color_graph_editor" in data: prefs.color_graph_editor = data["color_graph_editor"]
             if "color_nla_editor" in data: prefs.color_nla_editor = data["color_nla_editor"]
             if "draw_playback_overlay" in data: prefs.draw_playback_overlay = data["draw_playback_overlay"]
+            if "draw_local_view_overlay" in data: prefs.draw_local_view_overlay = data["draw_local_view_overlay"]
+            if "local_view_overlay_pos_mode" in data: prefs.local_view_overlay_pos_mode = data["local_view_overlay_pos_mode"]
+            if "local_view_overlay_percent_x" in data: prefs.local_view_overlay_percent_x = data["local_view_overlay_percent_x"]
+            if "local_view_overlay_percent_y" in data: prefs.local_view_overlay_percent_y = data["local_view_overlay_percent_y"]
+            if "local_view_overlay_font_size" in data: prefs.local_view_overlay_font_size = data["local_view_overlay_font_size"]
+            if "local_view_overlay_use_custom_accent" in data: prefs.local_view_overlay_use_custom_accent = data["local_view_overlay_use_custom_accent"]
+            if "local_view_overlay_accent_color" in data: prefs.local_view_overlay_accent_color = data["local_view_overlay_accent_color"]
+            if "local_view_overlay_bg_color" in data: prefs.local_view_overlay_bg_color = data["local_view_overlay_bg_color"]
+            if "local_view_overlay_bg_alpha" in data: prefs.local_view_overlay_bg_alpha = data["local_view_overlay_bg_alpha"]
 
             update_header_color()
             self.report({'INFO'}, "Preset loaded successfully")
@@ -139,7 +157,25 @@ class PREFERENCES_OT_reset_header_colors(Operator):
         prefs.color_graph_editor = True
         prefs.color_nla_editor = True
         prefs.draw_playback_overlay = True
+        prefs.draw_local_view_overlay = True
+        prefs.local_view_overlay_pos_mode = 'CENTER_TOP'
+        prefs.local_view_overlay_percent_x = 50.0
+        prefs.local_view_overlay_percent_y = 90.0
+        prefs.local_view_overlay_font_size = 13
+        prefs.local_view_overlay_use_custom_accent = False
+        prefs.local_view_overlay_accent_color = (0.8, 0.45, 0.08, 1.0)
+        prefs.local_view_overlay_bg_color = (0.08, 0.08, 0.08)
+        prefs.local_view_overlay_bg_alpha = 0.85
+        prefs.local_view_overlay_preview_show = False
         prefs.use_auto_contrast_text = True
+        prefs.draw_mode_outline = False
+        prefs.mode_outline_thickness = 4
+        prefs.mode_outline_opacity = 0.9
+        prefs.draw_mode_name = False
+        prefs.mode_name_percent_x = 50.0
+        prefs.mode_name_percent_y = 5.0
+        prefs.mode_name_font_size = 14
+        prefs.settings_tab = 'GENERAL'
 
         update_header_color()
         self.report({'INFO'}, "Header colors reset to defaults")
